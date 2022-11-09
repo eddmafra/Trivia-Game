@@ -1,5 +1,7 @@
 import React from 'react';
-// Inserindo release
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { thunkToken } from '../redux/actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -10,7 +12,6 @@ const INITIAL_STATE = {
 class Login extends React.Component {
   constructor() {
     super();
-
     this.state = INITIAL_STATE;
   }
 
@@ -32,6 +33,12 @@ class Login extends React.Component {
         btnDisable: true,
       });
     }
+  };
+
+  startGame = () => {
+    const { history, dispatch } = this.props;
+    dispatch(thunkToken());
+    history.push('/jogodetrivia');
   };
 
   render() {
@@ -66,7 +73,7 @@ class Login extends React.Component {
           data-testid="btn-play"
           type="button"
           disabled={ btnDisable }
-          onClick={ () => {} }
+          onClick={ this.startGame }
         >
           Play
         </button>
@@ -76,4 +83,15 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+Login.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  token: state.payload,
+});
+
+export default connect(mapStateToProps)(Login);
