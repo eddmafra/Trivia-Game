@@ -41,6 +41,11 @@ class Login extends React.Component {
     history.push('/jogodetrivia');
   };
 
+  btnSettings = () => {
+    const { history } = this.props;
+    history.push('/settings');
+  };
+
   render() {
     const { name, email, btnDisable } = this.state;
     return (
@@ -76,6 +81,13 @@ class Login extends React.Component {
           onClick={ this.startGame }
         >
           Play
+        </button>
+        <button
+          data-testid="btn-settings"
+          type="button"
+          onClick={ this.btnSettings }
+        >
+          Configuração
         </button>
 
       </form>
