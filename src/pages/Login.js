@@ -1,4 +1,5 @@
 import React from 'react';
+// Inserindo release
 
 const INITIAL_STATE = {
   name: '',
