@@ -38,9 +38,9 @@ class Login extends React.Component {
 
   startGame = () => {
     const { history, dispatch } = this.props;
-    const { email, name, score } = this.state;
+    const { email, name } = this.state;
     dispatch(thunkToken());
-    dispatch(requestEmail(email, name, score));
+    dispatch(requestEmail(email, name));
     history.push('/jogodetrivia');
   };
 
@@ -90,7 +90,7 @@ class Login extends React.Component {
           type="button"
           onClick={ this.btnSettings }
         >
-          Configuração
+          Configurações
         </button>
 
       </form>
