@@ -1,5 +1,5 @@
+// import getProfile from '../../services/fetchProfile';
 import getToken from '../../services/fetchToken';
-import getProfile from '../../services/fetchProfile';
 
 export const SUCCESS_TOKEN = 'SUCCESS_TOKEN';
 export const REQUEST_TOKEN = 'REQUEST_TOKEN';
@@ -31,32 +31,10 @@ export function thunkToken() {
   };
 }
 
-export const SUCCESS_PROFILE = 'SUCCESS_PROFILE';
-export const REQUEST_PROFILE = 'REQUEST_PROFILE';
-export const ERROR_PROFILE = 'ERROR_PROFILE';
+export const GRAVATAR_EMAIL = 'GRAVATAR_EMAIL';
 
-export const requestProfile = () => ({
-  type: REQUEST_PROFILE,
+export const requestEmail = (email, nome) => ({
+  type: GRAVATAR_EMAIL,
+  email,
+  nome,
 });
-
-export const successProfile = (imgSrc) => ({
-  type: SUCCESS_PROFILE,
-  imgSrc,
-});
-
-export const errorProfile = (error) => ({
-  type: ERROR_PROFILE,
-  error,
-});
-
-export function thunkProfile(hashGerada) {
-  return async (dispatch) => {
-    dispatch(requestProfile());
-    try {
-      const response = await getProfile(hashGerada);
-      dispatch(successProfile(response));
-    } catch (error) {
-      dispatch(errorProfile(error));
-    }
-  };
-}

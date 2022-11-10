@@ -1,8 +1,8 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import md5 from 'crypto-js/md5';
-import { thunkToken, thunkProfile } from '../redux/actions';
+
+import { requestEmail, thunkToken } from '../redux/actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -38,10 +38,9 @@ class Login extends React.Component {
 
   startGame = () => {
     const { history, dispatch } = this.props;
-    const { email } = this.state;
+    const { email, name, score } = this.state;
     dispatch(thunkToken());
-    const hashGerada = md5(email).toString();
-    dispatch(thunkProfile(hashGerada));
+    dispatch(requestEmail(email, name, score));
     history.push('/jogodetrivia');
   };
 

@@ -1,15 +1,19 @@
-import { SUCCESS_PROFILE } from '../actions';
+import { GRAVATAR_EMAIL } from '../actions';
 
 const INITIAL_STATE = {
-  src: '',
+  name: '',
+  assertions: 0,
+  score: 0,
+  gravatarEmail: '',
 };
 
 const playerReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case SUCCESS_PROFILE:
+  case GRAVATAR_EMAIL:
     return {
       ...state,
-      src: action.imgSrc,
+      gravatarEmail: action.email,
+      name: action.nome,
     };
   default:
     return state;
