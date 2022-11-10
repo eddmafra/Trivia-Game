@@ -1,3 +1,4 @@
+// import getProfile from '../../services/fetchProfile';
 import getToken from '../../services/fetchToken';
 
 export const SUCCESS_TOKEN = 'SUCCESS_TOKEN';
@@ -29,3 +30,11 @@ export function thunkToken() {
     }
   };
 }
+
+export const GRAVATAR_EMAIL = 'GRAVATAR_EMAIL';
+
+export const requestEmail = (email, nome) => ({
+  type: GRAVATAR_EMAIL,
+  email,
+  nome,
+});
