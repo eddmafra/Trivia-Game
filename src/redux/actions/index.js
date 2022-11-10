@@ -1,4 +1,3 @@
-// import getProfile from '../../services/fetchProfile';
 import getToken from '../../services/fetchToken';
 
 export const SUCCESS_TOKEN = 'SUCCESS_TOKEN';
