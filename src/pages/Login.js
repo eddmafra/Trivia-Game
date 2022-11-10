@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { thunkToken } from '../redux/actions';
+import md5 from 'crypto-js/md5';
+import { thunkToken, thunkProfile } from '../redux/actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -24,7 +25,7 @@ class Login extends React.Component {
 
   validationLogin = () => {
     const { email, name } = this.state;
-    const validationEmail = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/;
+    const validationEmail = /^.{3,}$/;
     const validationName = /^.{3,}$/;
     if (validationEmail.test(email) && validationName.test(name)) {
       this.setState({ btnDisable: false });
@@ -37,7 +38,10 @@ class Login extends React.Component {
 
   startGame = () => {
     const { history, dispatch } = this.props;
+    const { email } = this.state;
     dispatch(thunkToken());
+    const hashGerada = md5(email).toString();
+    dispatch(thunkProfile(hashGerada));
     history.push('/jogodetrivia');
   };
 
