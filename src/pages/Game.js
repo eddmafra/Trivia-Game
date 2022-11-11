@@ -1,6 +1,6 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import getTrivia from '../services/fetchTrivia';
 
@@ -11,6 +11,7 @@ class Game extends Component {
       questions: [],
       indexQuestion: 0,
       score: 0,
+      color: false,
     };
   }
 
@@ -38,17 +39,23 @@ class Game extends Component {
     const answer = target.value;
     const points = 10;
     console.log(indexQuestion);
+    this.setState({
+      color: true,
+    });
     if (answer === 'correct') {
       this.setState((prev) => ({
-        indexQuestion: (prev.indexQuestion + 1),
+        // indexQuestion: (prev.indexQuestion + 1),
         score: (prev.score + points),
       }));
     } else if (answer === 'incorrect') {
       this.setState((prev) => ({
-        indexQuestion: (prev.indexQuestion + 1),
+        // indexQuestion: (prev.indexQuestion + 1),
         score: (prev.score - points),
       }));
     }
+    // this.setState({
+    //   color: false,
+    // });
   };
 
   randomAnswers = (array) => {
@@ -57,8 +64,12 @@ class Game extends Component {
     return random;
   };
 
+  mudarCor = (el, e) => (
+    el === e.correct_answer
+      ? '3px solid rgb(6, 240, 15)' : '3px solid red');
+
   render() {
-    const { questions, indexQuestion } = this.state;
+    const { questions, indexQuestion, color } = this.state;
     // console.log(questions);
     if (questions.length === 0) {
       return (
@@ -94,6 +105,9 @@ class Game extends Component {
                         value={ el === e.correct_answer ? 'correct' : 'incorrect' }
                         data-testid={ el === e.correct_answer
                           ? 'correct-answer' : `wrong-answer-${index}` }
+                        style={ {
+                          border: color && (this.mudarCor(el, e)),
+                        } }
                       >
                         { el }
 
