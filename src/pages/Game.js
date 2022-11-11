@@ -1,6 +1,6 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import getTrivia from '../services/fetchTrivia';
 
@@ -11,8 +11,8 @@ class Game extends Component {
       questions: [],
       indexQuestion: 0,
       score: 0,
+      color: false,
       timer: 30,
-      // disabled: false,
     };
   }
 
@@ -40,7 +40,9 @@ class Game extends Component {
     // const { indexQuestion } = this.state;
     const answer = target.value;
     const points = 10;
-    // console.log(indexQuestion);
+    this.setState({
+      color: true,
+    });
     if (answer === 'correct') {
       this.setState((prev) => ({
         // indexQuestion: (prev.indexQuestion + 1),
@@ -52,6 +54,9 @@ class Game extends Component {
         score: (prev.score - points),
       }));
     }
+    // this.setState({
+    //   color: false,
+    // });
   };
 
   randomAnswers = (array, timer) => {
@@ -81,8 +86,12 @@ class Game extends Component {
     }));
   };
 
+  mudarCor = (el, e) => (
+    el === e.correct_answer
+      ? '3px solid rgb(6, 240, 15)' : '3px solid red');
+
   render() {
-    const { questions, indexQuestion, timer } = this.state;
+    const { questions, indexQuestion, color, timer } = this.state;
     // console.log(questions);
     if (questions.length === 0) {
       return (
@@ -127,12 +136,14 @@ class Game extends Component {
                       data-testid="btn-next"
                       onClick={ this.clickNext }
                       disabled={ timer <= 0 }
+                      style={ {
+                          border: color && (this.mudarCor(el, e)),
+                        } }
                     >
                       Próxima Pergunta
 
                     </button>
                   </div>
-
                 </div>
               </div>
             );
