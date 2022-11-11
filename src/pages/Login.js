@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import { requestEmail, thunkToken } from '../redux/actions';
+import getToken from '../services/fetchToken';
+import { requestEmail } from '../redux/actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -36,11 +36,12 @@ class Login extends React.Component {
     }
   };
 
-  startGame = () => {
+  startGame = async () => {
     const { history, dispatch } = this.props;
-    const { email, name } = this.state;
-    dispatch(thunkToken());
-    dispatch(requestEmail(email, name));
+    const { email, name, score } = this.state;
+    const data = await getToken();
+    localStorage.setItem('token', data.token);
+    dispatch(requestEmail(email, name, score));
     history.push('/jogodetrivia');
   };
 
