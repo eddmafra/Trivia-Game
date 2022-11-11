@@ -12,11 +12,13 @@ class Game extends Component {
       indexQuestion: 0,
       score: 0,
       color: false,
+      timer: 30,
     };
   }
 
   componentDidMount() {
     this.renderQuestions();
+    this.myTimer();
   }
 
   renderQuestions = async () => {
@@ -35,10 +37,9 @@ class Game extends Component {
 
   clickAnswer = ({ target }) => {
     console.log(target.value);
-    const { indexQuestion } = this.state;
+    // const { indexQuestion } = this.state;
     const answer = target.value;
     const points = 10;
-    console.log(indexQuestion);
     this.setState({
       color: true,
     });
@@ -58,10 +59,31 @@ class Game extends Component {
     // });
   };
 
-  randomAnswers = (array) => {
+  randomAnswers = (array, timer) => {
     const NUMBER = 0.5;
-    const random = array.sort(() => Math.random() - NUMBER);
-    return random;
+    const time = 30;
+    if (timer === time) {
+      const random = array.sort(() => Math.random() - NUMBER);
+      return random;
+    }
+    return array;
+  };
+
+  myTimer = () => {
+    const { timer } = this.state;
+    const seconds = 1000;
+    // clearInterval(teste);
+    setInterval(() => {
+      this.setState((prev) => ({
+        timer: timer > 0 ? prev.timer - 1 : 0,
+      }));
+    }, seconds);
+  };
+
+  clickNext = () => {
+    this.setState((prev) => ({
+      indexQuestion: (prev.indexQuestion + 1),
+    }));
   };
 
   mudarCor = (el, e) => (
@@ -69,7 +91,7 @@ class Game extends Component {
       ? '3px solid rgb(6, 240, 15)' : '3px solid red');
 
   render() {
-    const { questions, indexQuestion, color } = this.state;
+    const { questions, indexQuestion, color, timer } = this.state;
     // console.log(questions);
     if (questions.length === 0) {
       return (
@@ -79,46 +101,56 @@ class Game extends Component {
     return (
       <>
         <Header />
+
         {questions.map((e, i) => {
           if (i === indexQuestion) {
             return (
-              <div key={ i }>
-                <div className="perguntas">
-                  <p data-testid="question-text">{ e.question }</p>
-                  <p data-testid="question-category">{ e.category }</p>
-                </div>
-                <div className="respostas" data-testid="answer-options">
-                  {/* <button
-                    onClick={ this.clickAnswer }
-                    type="button"
-                    value="correct"
-                    data-testid="correct-answer"
-                  >
-                    { e.correct_answer }
-                  </button> */}
-                  {this.randomAnswers([...e.incorrect_answers, e.correct_answer])
-                    .map((el, index) => (
-                      <button
-                        onClick={ this.clickAnswer }
-                        type="button"
-                        key={ index }
-                        value={ el === e.correct_answer ? 'correct' : 'incorrect' }
-                        data-testid={ el === e.correct_answer
-                          ? 'correct-answer' : `wrong-answer-${index}` }
-                        style={ {
+              <div>
+                <p>
+                  Timer
+                  { timer }
+                </p>
+                <div key={ i }>
+                  <div className="perguntas">
+                    <p data-testid="question-text">{ e.question }</p>
+                    <p data-testid="question-category">{ e.category }</p>
+                  </div>
+                  <div className="respostas" data-testid="answer-options">
+                    {this.randomAnswers([...e.incorrect_answers, e.correct_answer], timer)
+                      .map((el, index) => (
+                        <button
+                          onClick={ this.clickAnswer }
+                          disabled={ timer <= 0 }
+                          type="button"
+                          key={ index }
+                          value={ el === e.correct_answer ? 'correct' : 'incorrect' }
+                          data-testid={ el === e.correct_answer
+                            ? 'correct-answer' : `wrong-answer-${index}` }
+                        >
+                          { el }
+
+                        </button>
+                      ))}
+                    <button
+                      type="button"
+                      data-testid="btn-next"
+                      onClick={ this.clickNext }
+                      disabled={ timer <= 0 }
+                      style={ {
                           border: color && (this.mudarCor(el, e)),
                         } }
-                      >
-                        { el }
+                    >
+                      Próxima Pergunta
 
-                      </button>
-                    ))}
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           }
           return null;
         })}
+
       </>
     );
   }
