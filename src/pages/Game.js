@@ -25,7 +25,6 @@ class Game extends Component {
     const { history } = this.props;
     const getToken = localStorage.getItem('token');
     const response = await getTrivia(getToken);
-    // console.log(response);
     if (response.response_code !== 0) {
       localStorage.removeItem('token');
       history.push('/');
@@ -36,8 +35,6 @@ class Game extends Component {
   };
 
   clickAnswer = ({ target }) => {
-    console.log(target.value);
-    // const { indexQuestion } = this.state;
     const answer = target.value;
     const points = 10;
     this.setState({
@@ -45,18 +42,13 @@ class Game extends Component {
     });
     if (answer === 'correct') {
       this.setState((prev) => ({
-        // indexQuestion: (prev.indexQuestion + 1),
         score: (prev.score + points),
       }));
     } else if (answer === 'incorrect') {
       this.setState((prev) => ({
-        // indexQuestion: (prev.indexQuestion + 1),
         score: (prev.score - points),
       }));
     }
-    // this.setState({
-    //   color: false,
-    // });
   };
 
   randomAnswers = (array, timer) => {
@@ -72,7 +64,6 @@ class Game extends Component {
   myTimer = () => {
     const { timer } = this.state;
     const seconds = 1000;
-    // clearInterval(teste);
     setInterval(() => {
       this.setState((prev) => ({
         timer: timer > 0 ? prev.timer - 1 : 0,
@@ -83,6 +74,7 @@ class Game extends Component {
   clickNext = () => {
     this.setState((prev) => ({
       indexQuestion: (prev.indexQuestion + 1),
+      color: false,
     }));
   };
 
@@ -126,6 +118,9 @@ class Game extends Component {
                           value={ el === e.correct_answer ? 'correct' : 'incorrect' }
                           data-testid={ el === e.correct_answer
                             ? 'correct-answer' : `wrong-answer-${index}` }
+                          style={ {
+                            border: color && (this.mudarCor(el, e)),
+                          } }
                         >
                           { el }
 
@@ -136,9 +131,6 @@ class Game extends Component {
                       data-testid="btn-next"
                       onClick={ this.clickNext }
                       disabled={ timer <= 0 }
-                      style={ {
-                          border: color && (this.mudarCor(el, e)),
-                        } }
                     >
                       Próxima Pergunta
 
