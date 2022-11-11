@@ -1,8 +1,9 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import App from '../App';
 import renderWithRouterAndRedux from './helpers/renderWithRouterAndRedux';
+
 
 describe('Testar a tela de Login', () => {
   it('Verificar se há campos de nome e email', () => {
@@ -12,7 +13,7 @@ describe('Testar a tela de Login', () => {
     const checkSenha = screen.getByPlaceholderText(/Insira seu nome/i);
     expect(checkSenha).toBeInTheDocument();
   });
-  it('Verificar se o botão consta desabilitado caso o nome e e-mail não forem preenchidos', () => {
+  it('Verificar se o botão consta desabilitado caso o nome e e-mail não forem preenchidos', async () => {
     const { history } = renderWithRouterAndRedux(<App />);
     const inputName = screen.getByTestId('input-player-name');
     expect(inputName).toBeInTheDocument();
@@ -25,7 +26,11 @@ describe('Testar a tela de Login', () => {
     userEvent.type(inputEmail, 'email@email.com');
     expect(btn).toBeEnabled();
     userEvent.click(btn);
-    expect(history.location.pathname).toBe('/jogodetrivia');
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/jogodetrivia');
+    }, {
+      timeout: 5000
+    });
   });
   it('Verificar se há um botão que direciona para Configurações ', () => {
     const { history } = renderWithRouterAndRedux(<App />);
