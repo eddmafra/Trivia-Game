@@ -9,6 +9,8 @@ class Game extends Component {
     super();
     this.state = {
       questions: [],
+      indexQuestion: 0,
+      score: 0,
     };
   }
 
@@ -30,9 +32,34 @@ class Game extends Component {
     });
   };
 
+  clickAnswer = ({ target }) => {
+    console.log(target.value);
+    const { indexQuestion } = this.state;
+    const answer = target.value;
+    const points = 10;
+    console.log(indexQuestion);
+    if (answer === 'correct') {
+      this.setState((prev) => ({
+        indexQuestion: (prev.indexQuestion + 1),
+        score: (prev.score + points),
+      }));
+    } else if (answer === 'incorrect') {
+      this.setState((prev) => ({
+        indexQuestion: (prev.indexQuestion + 1),
+        score: (prev.score - points),
+      }));
+    }
+  };
+
+  randomAnswers = (array) => {
+    const NUMBER = 0.5;
+    const random = array.sort(() => Math.random() - NUMBER);
+    return random;
+  };
+
   render() {
-    const { questions } = this.state;
-    console.log(questions);
+    const { questions, indexQuestion } = this.state;
+    // console.log(questions);
     if (questions.length === 0) {
       return (
         <Header />
@@ -41,35 +68,43 @@ class Game extends Component {
     return (
       <>
         <Header />
-        {questions.map((e, i) => (
+        {questions.map((e, i) => {
+          if (i === indexQuestion) {
+            return (
+              <div key={ i }>
+                <div className="perguntas">
+                  <p data-testid="question-text">{ e.question }</p>
+                  <p data-testid="question-category">{ e.category }</p>
+                </div>
+                <div className="respostas" data-testid="answer-options">
+                  {/* <button
+                    onClick={ this.clickAnswer }
+                    type="button"
+                    value="correct"
+                    data-testid="correct-answer"
+                  >
+                    { e.correct_answer }
+                  </button> */}
+                  {this.randomAnswers([...e.incorrect_answers, e.correct_answer])
+                    .map((el, index) => (
+                      <button
+                        onClick={ this.clickAnswer }
+                        type="button"
+                        key={ index }
+                        value={ el === e.correct_answer ? 'correct' : 'incorrect' }
+                        data-testid={ el === e.correct_answer
+                          ? 'correct-answer' : `wrong-answer-${index}` }
+                      >
+                        { el }
 
-          <div key={ i }>
-            <div className="perguntas">
-              <p data-testid="question-text">{ e.question }</p>
-              <p data-testid="question-category">{ e.category }</p>
-            </div>
-            <div className="respostas" data-testid="answer-options">
-              <button
-                type="button"
-                data-testid="correct-answer"
-              >
-                { e.correct_answer }
-
-              </button>
-              {e.incorrect_answers.map((el, index) => (
-                <button
-                  type="button"
-                  key={ index }
-                  data-testid={ `wrong-answer-${index}` }
-                >
-                  { el }
-
-                </button>
-              ))}
-            </div>
-          </div>
-
-        ))}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })}
       </>
     );
   }
