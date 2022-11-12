@@ -1,26 +1,68 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Header from '../components/Header';
+import { scoreAction } from '../redux/actions';
 
 class Feedback extends Component {
+  playAgain = () => {
+    const resetScore = 0;
+    const { dispatch } = this.props;
+    const { history } = this.props;
+    dispatch(scoreAction(resetScore));
+    history.push('/');
+  };
+
+  goToRanking = () => {
+    const { history } = this.props;
+    history.push('/ranking');
+  };
+
   render() {
-    const { rightAnswer } = this.props;
+    const { assertions, score } = this.props;
     const NUMBER = 3;
     return (
       <>
-        <Header />
-        {(rightAnswer >= NUMBER) ? <p>Well Done!</p> : <p>Could be better...</p>}
+        <Header scoreType={ score } />
+        {(assertions >= NUMBER)
+          ? <p data-testid="feedback-text">Well Done!</p>
+          : <p data-testid="feedback-text">Could be better...</p>}
+        <div>
+          <p data-testid="feedback-total-question">{assertions}</p>
+          <p data-testid="feedback-total-score">{score}</p>
+        </div>
+        <button
+          type="button"
+          data-testid="btn-play-again"
+          onClick={ this.playAgain }
+        >
+          Play Again
+        </button>
+        <button
+          type="button"
+          data-testid="btn-ranking"
+          onClick={ this.goToRanking }
+        >
+          Ranking
+
+        </button>
       </>
     );
   }
 }
 
 Feedback.propTypes = {
-  rightAnswer: PropTypes.number.isRequired,
+  assertions: PropTypes.number.isRequired,
+  score: PropTypes.number.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
-mapStateToProps = (state) => ({
-  rightAnswer: state.reducer.rightAnswer,
+const mapStateToProps = (state) => ({
+  assertions: state.playerReducer.assertions,
+  score: state.playerReducer.score,
 });
 
-export default connect()(Feedback);
+export default connect(mapStateToProps)(Feedback);

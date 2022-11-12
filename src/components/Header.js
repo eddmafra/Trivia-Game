@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 class Header extends Component {
   render() {
-    const { name, score, gravatarEmail } = this.props;
+    const { name, scoreType, gravatarEmail } = this.props;
     const getHash = md5(gravatarEmail).toString();
     return (
       <header>
@@ -18,7 +18,7 @@ class Header extends Component {
           { name }
         </p>
         <p data-testid="header-score">
-          { score }
+          { scoreType }
         </p>
       </header>
     );
@@ -27,7 +27,7 @@ class Header extends Component {
 
 Header.propTypes = {
   name: PropTypes.string.isRequired,
-  score: PropTypes.number.isRequired,
+  scoreType: PropTypes.number.isRequired,
   gravatarEmail: PropTypes.string.isRequired,
 };
 
