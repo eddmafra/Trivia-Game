@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
-import playerReducer from './player';
+import player from './player';
 import tokenReducer from './token';
 
 const rootReducer = combineReducers({
-  playerReducer,
+  player,
   tokenReducer,
 });
 

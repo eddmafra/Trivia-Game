@@ -27,10 +27,8 @@ class Feedback extends Component {
         {(assertions >= NUMBER)
           ? <p data-testid="feedback-text">Well Done!</p>
           : <p data-testid="feedback-text">Could be better...</p>}
-        <div>
-          <p data-testid="feedback-total-question">{assertions}</p>
-          <p data-testid="feedback-total-score">{score}</p>
-        </div>
+        <p data-testid="feedback-total-question">{assertions}</p>
+        <p data-testid="feedback-total-score">{score}</p>
         <button
           type="button"
           data-testid="btn-play-again"
@@ -61,8 +59,8 @@ Feedback.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  assertions: state.playerReducer.assertions,
-  score: state.playerReducer.score,
+  assertions: state.player.assertions,
+  score: state.player.score,
 });
 
 export default connect(mapStateToProps)(Feedback);

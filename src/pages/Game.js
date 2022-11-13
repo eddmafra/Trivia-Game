@@ -94,13 +94,13 @@ class Game extends Component {
     const medium = 2;
     const hard = 3;
     if (questions[indexQuestion].difficulty === 'easy') {
-      return dispatch(scoreAction((points + ((timer - 1) * easy))));
+      return dispatch(scoreAction((points + (timer * easy))));
     }
     if (questions[indexQuestion].difficulty === 'medium') {
-      return dispatch(scoreAction((points + ((timer - 1) * medium))));
+      return dispatch(scoreAction((points + (timer * medium))));
     }
     if (questions[indexQuestion].difficulty === 'hard') {
-      return dispatch(scoreAction((points + ((timer - 1) * hard))));
+      return dispatch(scoreAction((points + (timer * hard))));
     }
   };
 
@@ -175,13 +175,17 @@ class Game extends Component {
           }
           return null;
         })}
-        {color && <button
-          type="button"
-          data-testid="btn-next"
-          onClick={ this.clickNext }
-        >
-          Próxima Pergunta
-                  </button>}
+        {
+          color && (
+            <button
+              type="button"
+              data-testid="btn-next"
+              onClick={ this.clickNext }
+            >
+              Próxima Pergunta
+            </button>)
+        }
+
       </>
     );
   }
