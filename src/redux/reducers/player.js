@@ -18,12 +18,12 @@ const playerReducer = (state = INITIAL_STATE, action) => {
   case PLAYER_RIGHT_ANSWER:
     return {
       ...state,
-      assertions: action.answer,
+      assertions: state.assertions + action.answer,
     };
   case SCORE:
     return {
       ...state,
-      score: action.payload,
+      score: state.score + action.payload,
     };
   default:
     return state;
