@@ -7,7 +7,7 @@ const INITIAL_STATE = {
   gravatarEmail: '',
 };
 
-const playerReducer = (state = INITIAL_STATE, action) => {
+const player = (state = INITIAL_STATE, action) => {
   switch (action.type) {
   case GRAVATAR_EMAIL:
     return {
@@ -30,4 +30,4 @@ const playerReducer = (state = INITIAL_STATE, action) => {
   }
 };
 
-export default playerReducer;
+export default player;
