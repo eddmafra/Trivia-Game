@@ -1,4 +1,4 @@
-import { GRAVATAR_EMAIL } from '../actions';
+import { GRAVATAR_EMAIL, PLAYER_RIGHT_ANSWER, SCORE } from '../actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -14,6 +14,16 @@ const playerReducer = (state = INITIAL_STATE, action) => {
       ...state,
       gravatarEmail: action.email,
       name: action.nome,
+    };
+  case PLAYER_RIGHT_ANSWER:
+    return {
+      ...state,
+      assertions: state.assertions + action.answer,
+    };
+  case SCORE:
+    return {
+      ...state,
+      score: state.score + action.payload,
     };
   default:
     return state;

@@ -37,3 +37,17 @@ export const requestEmail = (email, nome) => ({
   email,
   nome,
 });
+
+export const PLAYER_RIGHT_ANSWER = 'PLAYER_RIGHT_ANSWER';
+
+export const rightAnswer = (answer) => ({
+  type: PLAYER_RIGHT_ANSWER,
+  answer,
+});
+
+export const SCORE = 'SCORE';
+
+export const scoreAction = (payload) => ({
+  type: SCORE,
+  payload,
+});
