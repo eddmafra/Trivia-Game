@@ -11,10 +11,11 @@ class Game extends Component {
     this.state = {
       questions: [],
       indexQuestion: 0,
-      localScore: 0,
       color: false,
       timer: 30,
       correctAnswers: 0,
+      sortedAnswers: [],
+      singleAnswer: [],
     };
   }
 
@@ -33,13 +34,74 @@ class Game extends Component {
     }
     this.setState({
       questions: response.results,
+    }, () => {
+      this.randomizeAnswers();
     });
   };
 
-  randomAnswers = (array) => {
+  myTimer = () => {
+    const seconds = 1000;
+    setInterval(() => {
+      const { timer } = this.state;
+      if (timer > 0) {
+        this.setState((prev) => ({
+          timer: prev.timer > 0 ? prev.timer - 1 : 0,
+        }));
+      }
+    }, seconds);
+  };
+
+  clickNext = () => {
+    const { history } = this.props;
+    const FOUR = 4;
+    this.setState((prev) => ({
+      indexQuestion: (prev.indexQuestion + 1),
+      timer: 30,
+      color: false,
+    }), () => {
+      const { indexQuestion, sortedAnswers } = this.state;
+      if (indexQuestion > FOUR) {
+        history.push('/feedback');
+      }
+      this.setState({
+        singleAnswer: sortedAnswers[indexQuestion],
+      });
+    });
+  };
+
+  randomizeAnswers = () => {
     const NUMBER = 0.5;
-    const random = array.sort(() => Math.random() - NUMBER);
-    return random;
+    const { questions } = this.state;
+    // console.log(questions);
+    const answer = questions.map((e) => [...e.incorrect_answers, e.correct_answer]);
+    // console.log(answer);
+    answer.forEach((e) => e.sort(() => Math.random() - NUMBER));
+    this.setState({
+      sortedAnswers: answer,
+      singleAnswer: answer[0],
+    });
+  };
+
+  mudarCor = (el, e) => (
+    el === e.correct_answer
+      ? '3px solid rgb(6, 240, 15)' : '3px solid red');
+
+  calcScore = () => {
+    const { indexQuestion, timer, questions } = this.state;
+    const { dispatch } = this.props;
+    const points = 10;
+    const easy = 1;
+    const medium = 2;
+    const hard = 3;
+    if (questions[indexQuestion].difficulty === 'easy') {
+      return dispatch(scoreAction((points + ((timer - 1) * easy))));
+    }
+    if (questions[indexQuestion].difficulty === 'medium') {
+      return dispatch(scoreAction((points + ((timer - 1) * medium))));
+    }
+    if (questions[indexQuestion].difficulty === 'hard') {
+      return dispatch(scoreAction((points + ((timer - 1) * hard))));
+    }
   };
 
   clickAnswer = ({ target }) => {
@@ -49,85 +111,20 @@ class Game extends Component {
     });
     if (answer === 'correct') {
       this.calcScore();
-      this.setState((prev) => ({
-        correctAnswers: prev.correctAnswers + 1,
-      }));
-    }
-  };
-
-  myTimer = () => {
-    const seconds = 1000;
-    const countDown = setInterval(() => {
-      this.setState((prev) => ({
-        timer: prev.timer - 1,
-      }), () => {
-        const { timer } = this.state;
-        if (timer === 0) {
-          clearInterval(countDown);
-          this.setState({
-            color: true,
-          });
-        }
-      });
-    }, seconds);
-  };
-
-  calcScore = () => {
-    const { questions, timer, indexQuestion } = this.state;
-    const { dispatch } = this.props;
-    const points = 10;
-    const easy = 1;
-    const medium = 2;
-    const hard = 3;
-    if (questions[indexQuestion].difficulty === 'easy') {
-      this.setState((prev) => ({
-        localScore: prev.localScore + (points + (timer * easy)),
-      }), () => {
-        const { localScore } = this.state;
-        dispatch(scoreAction(localScore));
-      });
-    }
-    if (questions[indexQuestion].difficulty === 'medium') {
-      this.setState((prev) => ({
-        localScore: prev.localScore + (points + (timer * medium)),
-      }), () => {
-        const { localScore } = this.state;
-        dispatch(scoreAction(localScore));
-      });
-    }
-    if (questions[indexQuestion].difficulty === 'hard') {
-      this.setState((prev) => ({
-        localScore: prev.localScore + (points + (timer * hard)),
-      }), () => {
-        const { localScore } = this.state;
-        dispatch(scoreAction(localScore));
+      this.setState({
+        correctAnswers: 1,
+      }, () => {
+        const { dispatch } = this.props;
+        const { correctAnswers } = this.state;
+        dispatch(rightAnswer(correctAnswers));
       });
     }
   };
-
-  clickNext = () => {
-    const { correctAnswers, indexQuestion } = this.state;
-    const { history } = this.props;
-    const FOUR = 4;
-    if (indexQuestion === FOUR) {
-      history.push('/feedback');
-    }
-    const { dispatch } = this.props;
-    dispatch(rightAnswer(correctAnswers));
-    this.setState((prev) => ({
-      indexQuestion: (prev.indexQuestion + 1),
-      color: false,
-      timer: 30,
-    }));
-  };
-
-  mudarCor = (el, e) => (
-    el === e.correct_answer
-      ? '3px solid rgb(6, 240, 15)' : '3px solid red');
 
   render() {
-    const { questions, indexQuestion, color, timer, localScore } = this.state;
-    // console.log(questions);
+    const {
+      questions, localScore, singleAnswer, color, timer, indexQuestion } = this.state;
+    // console.log(singleAnswer);
     if (questions.length === 0) {
       return (
         <Header />
@@ -136,7 +133,6 @@ class Game extends Component {
     return (
       <>
         <Header scoreType={ localScore } />
-
         {questions.map((e, i) => {
           if (i === indexQuestion) {
             return (
@@ -151,33 +147,27 @@ class Game extends Component {
                     <p data-testid="question-category">{ e.category }</p>
                   </div>
                   <div className="respostas" data-testid="answer-options">
-                    {this.randomAnswers([...e.incorrect_answers, e.correct_answer])
-                      .map((el, index) => (
-                        <button
-                          onClick={ this.clickAnswer }
-                          disabled={ timer <= 0 }
-                          type="button"
-                          key={ index }
-                          value={ el === e.correct_answer ? 'correct' : 'incorrect' }
-                          data-testid={ el === e.correct_answer
-                            ? 'correct-answer' : `wrong-answer-${index}` }
-                          style={ {
-                            border: color && (this.mudarCor(el, e)),
-                          } }
-                        >
-                          { el }
+                    {(singleAnswer).map((el, index) => (
+                      <button
+                        onClick={ this.clickAnswer }
+                        disabled={ timer <= 0 }
+                        type="button"
+                        key={ index }
+                        value={
+                          el === e
+                            .correct_answer ? 'correct' : 'incorrect'
+                        }
+                        data-testid={ el === e.correct_answer
+                          ? 'correct-answer' : `wrong-answer-${index}` }
+                        style={ {
+                          border: color && (this.mudarCor(el, e)),
+                        } }
+                      >
+                        { el }
 
-                        </button>
-                      ))}
-                    <button
-                      type="button"
-                      data-testid="btn-next"
-                      onClick={ this.clickNext }
-                      disabled={ timer <= 0 }
-                    >
-                      Próxima Pergunta
+                      </button>
+                    ))}
 
-                    </button>
                   </div>
                 </div>
               </div>
@@ -185,15 +175,21 @@ class Game extends Component {
           }
           return null;
         })}
-
+        {color && <button
+          type="button"
+          data-testid="btn-next"
+          onClick={ this.clickNext }
+        >
+          Próxima Pergunta
+                  </button>}
       </>
     );
   }
 }
 Game.propTypes = {
-  dispatch: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 export default connect()(Game);
