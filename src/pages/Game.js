@@ -1,9 +1,10 @@
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
 import getTrivia from '../services/fetchTrivia';
 import { rightAnswer, scoreAction } from '../redux/actions';
+import { pegaJogadorStorage, salvaJogadorStorage } from '../services/gameStorage';
 
 class Game extends Component {
   constructor() {
@@ -16,12 +17,14 @@ class Game extends Component {
       correctAnswers: 0,
       sortedAnswers: [],
       singleAnswer: [],
+      jogadores: [],
     };
   }
 
   componentDidMount() {
     this.renderQuestions();
     this.myTimer();
+    this.pegaJogador();
   }
 
   renderQuestions = async () => {
@@ -61,6 +64,7 @@ class Game extends Component {
     }), () => {
       const { indexQuestion, sortedAnswers } = this.state;
       if (indexQuestion > FOUR) {
+        this.adicionaJogador();
         history.push('/feedback');
       }
       this.setState({
@@ -88,19 +92,19 @@ class Game extends Component {
 
   calcScore = () => {
     const { indexQuestion, timer, questions } = this.state;
-    const { dispatch } = this.props;
+    const { dispatch, score } = this.props;
     const points = 10;
     const easy = 1;
     const medium = 2;
     const hard = 3;
     if (questions[indexQuestion].difficulty === 'easy') {
-      return dispatch(scoreAction((points + (timer * easy))));
+      return dispatch(scoreAction((score + points + (timer * easy))));
     }
     if (questions[indexQuestion].difficulty === 'medium') {
-      return dispatch(scoreAction((points + (timer * medium))));
+      return dispatch(scoreAction((score + points + (timer * medium))));
     }
     if (questions[indexQuestion].difficulty === 'hard') {
-      return dispatch(scoreAction((points + (timer * hard))));
+      return dispatch(scoreAction((score + points + (timer * hard))));
     }
   };
 
@@ -119,6 +123,19 @@ class Game extends Component {
         dispatch(rightAnswer(correctAnswers));
       });
     }
+  };
+
+  adicionaJogador = () => {
+    const numero = 4;
+    const { name, email, score } = this.props;
+    const { jogadores, indexQuestion } = this.state;
+    const objJogador = { name, email, score };
+    if (indexQuestion >= numero) salvaJogadorStorage([...jogadores, objJogador]);
+  };
+
+  pegaJogador = () => {
+    const jogadores = pegaJogadorStorage();
+    if (jogadores) this.setState({ jogadores });
   };
 
   render() {
@@ -190,10 +207,19 @@ class Game extends Component {
     );
   }
 }
-Game.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func,
-  }).isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
-export default connect()(Game);
+
+const mapStateToProps = (state) => ({
+  score: state.player.score,
+  name: state.player.name,
+  email: state.player.gravatarEmail,
+});
+
+// Game.propTypes = {
+//   history: PropTypes.shape({
+//     push: PropTypes.func,
+//   }).isRequired,
+//   dispatch: PropTypes.func.isRequired,
+// };
+Game.propTypes = {}.isRequired;
+
+export default connect(mapStateToProps)(Game);
