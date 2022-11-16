@@ -3,6 +3,7 @@ import getToken from '../../services/fetchToken';
 export const SUCCESS_TOKEN = 'SUCCESS_TOKEN';
 export const REQUEST_TOKEN = 'REQUEST_TOKEN';
 export const ERROR_TOKEN = 'ERROR_TOKEN';
+export const SCORE = 'SCORE';
 
 export const requestToken = () => ({
   type: REQUEST_TOKEN,
@@ -44,8 +45,6 @@ export const rightAnswer = (answer) => ({
   type: PLAYER_RIGHT_ANSWER,
   answer,
 });
-
-export const SCORE = 'SCORE';
 
 export const scoreAction = (payload) => ({
   type: SCORE,
